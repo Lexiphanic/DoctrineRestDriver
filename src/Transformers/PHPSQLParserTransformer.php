@@ -103,6 +103,8 @@ class PHPSQLParserTransformer
         $uri = $data['uri'];
         $payload = $data['payload'];
 
+        $querystring = (string) $data['where'];
+
         // Add generic paging
         if (isset($tokens['LIMIT']['offset'])) {
             $querystring .= '&_offset=' . (int) $tokens['LIMIT']['offset'];
@@ -139,7 +141,7 @@ class PHPSQLParserTransformer
     }
 
     /**
-     * 
+     * Gets the basic information from a query
      * @param array $tokens
      * @param string[] $params
      * @return mixed[]
@@ -181,7 +183,7 @@ class PHPSQLParserTransformer
     }
 
     /**
-     * 
+     * Gets the columns for the select column => alias
      * @param array $tokens
      * @return string[]
      */
@@ -199,11 +201,11 @@ class PHPSQLParserTransformer
     }
 
     /**
-     * 
+     * Creates a query string for the where section
      * @param mixed[] $token
      * @return string
      */
-    public function concatWhere(array $token)
+    private function concatWhere(array $token)
     {
         if ($token['expr_type'] === 'expression') {
             $result = implode('', array_map([$this, 'concatWhere'], $token['sub_tree'])) . '&';
@@ -217,7 +219,7 @@ class PHPSQLParserTransformer
     }
 
     /**
-     * 
+     * Gets the where section as query string with values
      * @param array $tokens
      * @param string[] $params
      * @return string
@@ -271,7 +273,7 @@ class PHPSQLParserTransformer
     }
 
     /**
-     * 
+     * Gets the path for a table
      * @param array $tokens
      * @return string
      * @throws \Exception
@@ -302,7 +304,7 @@ class PHPSQLParserTransformer
     }
 
     /**
-     * 
+     * Gets the values for insert (or update)
      * @param array $tokens
      * @return array
      * @throws \Exception
